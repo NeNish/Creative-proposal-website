@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Special Question for You...</title>
+    <!-- Tailwind CSS CDN for quick styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Font: Inter for a clean, modern look -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Base styles for the body to center content and apply font */
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden; /* Prevent horizontal scroll */
+            background-color: #f8fafc; /* Light blue-gray background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; /* Ensure it takes full viewport height */
+            margin: 0;
+            padding: 20px; /* Add some padding for smaller screens */
+            box-sizing: border-box;
+            position: relative; /* Needed for confetti positioning */
+        }
+
+        /* Styling for the main content containers */
+        #homepage, #main-content {
+            transition: opacity 0.5s ease-in-out; /* Smooth fade transition */
+            width: 100%;
+            max-width: 1200px; /* Increased max width for content on larger screens */
+        }
+
+        /* Specific styling for the homepage layout */
+        #homepage {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            min-height: calc(100vh - 40px); /* Adjust for body padding */
+            position: relative; /* Crucial for absolute positioning of the 'No' button */
+        }
+
+        /* Styling for the 'No' button to allow absolute positioning and smooth movement */
+        #no-button {
+            position: absolute;
+            transition: all 0.1s ease-out; /* Fast transition for the "jump" effect */
+            /* Initial positioning, will be overridden by JS */
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Styles for sections within the main content, for staggered reveal animation */
+        .section {
+            opacity: 0; /* Initially hidden */
+            transform: translateY(20px); /* Slightly moved down */
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out; /* Smooth fade and slide up */
+        }
+
+        /* Class to activate section visibility */
+        .section.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Custom scrollbar for a nicer aesthetic */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1; /* Tailwind gray-300 */
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; /* Tailwind gray-400 */
+        }
+
+        /* Confetti particle styling */
+        .confetti-particle {
+            position: absolute;
+            animation: fall linear forwards; /* Animation defined below */
+            z-index: 1000; /* Ensure confetti is on top */
+        }
+
+        /* Keyframe animation for confetti falling */
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(720deg); /* Fall down and spin */
+                opacity: 0; /* Fade out */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Homepage: The "Do you love me?" question -->
+    <div id="homepage" class="bg-white p-8 md:p-12 rounded-3xl shadow-xl flex flex-col items-center justify-center space-y-8">
+        <h1 class="text-4xl md:text-5xl font-extrabold text-gray-800 leading-tight">Do you love me?</h1>
+        <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-6 w-full justify-center">
+            <!-- Yes button: Leads to the main content -->
+            <button id="yes-button" class="bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition duration-300 ease-in-out hover:scale-105 focus:outline-none focus:ring-4 focus:ring-pink-300">
+                Yes! ❤️
+            </button>
+            <!-- No button: Moves away when hovered or clicked -->
+            <button id="no-button" class="bg-gray-400 hover:bg-gray-500 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition duration-300 ease-in-out hover:scale-105 focus:outline-none focus:ring-4 focus:ring-gray-300">
+                No 💔
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content: Revealed after clicking "Yes" -->
+    <div id="main-content" class="hidden opacity-0 bg-white p-8 md:p-12 rounded-3xl shadow-xl space-y-12 flex flex-col items-center">
+
+        <!-- New Navigation Buttons Container -->
+        <div id="navigation-buttons" class="flex flex-wrap justify-center gap-4 mb-8 w-full">
+            <button id="btn-welcome" data-target="welcome-section" class="nav-button bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-full shadow-lg transition duration-300 ease-in-out hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300">My Feelings</button>
+            <button id="btn-first-sight" data-target="first-sight-section" class="nav-button bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-6 rounded-full shadow-lg transition duration-300 ease-in-out hover:scale-105 focus:outline-none focus:ring-4 focus:ring-red-300">My first sight on YOU</button>
+            <button id="btn-reasons" data-target="reasons-section" class="nav-button bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-full shadow-lg transition duration-300 ease-in-out hover:scale-105 focus:outline-none focus:ring-4 focus:ring-green-300">Why I Love You</button>
+            <button id="btn-home-with-you" data-target="proposal-full" class="nav-button bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-6 rounded-full shadow-lg transition duration-300 ease-in-out hover:scale-105 focus:outline-none focus:ring-4 focus:ring-purple-300">My heart has found its home with you and THE BIGGEST QUESTION</button>
+            <!-- REMOVED: <button id="btn-big-question" data-target="proposal-question-only" class="nav-button bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-6 rounded-full shadow-lg transition duration-300 ease-in-out hover:scale-105 focus:outline-none focus:ring-4 focus:ring-orange-300">The Big Question</button> -->
+        </div>
+
+        <!-- Section 1: Welcome Message -->
+        <section id="welcome-section" class="section text-center hidden w-full">
+            <h2 class="text-3xl md:text-4xl font-extrabold text-pink-600 mb-6">My Dearest YOU,</h2>
+            <div class="text-lg text-gray-700 leading-relaxed max-w-5xl mx-auto space-y-4">
+                <p>
+                    From the moment I met you, my world found a new kind of light. Every laugh, ONLY ONE conversation, every shared silence has woven a beautiful tapestry that I cherish more than words can say. This little website is just a small reflection of the immense feelings you inspire in me.
+                </p>
+                <p>
+                    You're not just a girl, you're a masterpiece in motion.
+                </p>
+                <p>
+                    Your round, expressive eyes, shimmering like calm waters, peek out from behind your pilot-framed spectacles, making every glance feel like it's meant only for me. Eyes that don’t just look, they speak, they dream, they draw me in.
+                </p>
+                <p>
+                    And then there's your smile. Radiant, unfiltered, and utterly lethal in the sweetest way. Those charming buck teeth don’t take away from your beauty; they define it. A smile so honest, it disarms me without a word.
+                </p>
+                <p>
+                    Your voice? It's like the first drop of honey on a quiet morning. Warm, soothing, unforgettable. Every time you speak, it feels like the noise of the world fades just to make room for your words.
+                </p>
+                <p>
+                    When you dance, you don’t just move, you transcend. Every move, every step, is a story. You're pure grace wrapped in rhythm, like you were born to float instead of walk. Flawless doesn’t even begin to describe what you do when the music starts.
+                </p>
+                <p>
+                    But beyond all the beauty and elegance lies something even rarer, your brilliance. You're sharp, driven, and wise beyond your years. The kind of person who doesn’t just top exams but raises the bar for everyone around you. You are calm under pressure, kind even when the world isn’t, and confident without ever being arrogant.
+                </p>
+                <p>
+                    And your hair, impossibly long, silky, and mesmerizing, flows like poetry with every turn. One glimpse, and I am caught in a moment that makes me forget everything else.
+                </p>
+                <p>
+                    You are not just beautiful. You're inspiring. A perfect blend of grace, strength, intelligence, and soul. To know you, even from afar, is a privilege. To admire you is a feeling that words can barely contain.
+                </p>
+                <p>
+                    But here’s the truth I can’t escape: you hate me. I don’t know what I did or who I am in your eyes, but I feel the distance, the coldness, the indifference. And yet, even knowing that, I can't stop loving you. Not for a moment. My feelings are real, deep, and honest, not built on hope or fantasy, but on who you truly are.
+                </p>
+                <p>
+                    Please... I know I may not deserve your love, but I am still here, holding on to a quiet prayer that one day, somehow, you might see me differently. Just give me a chance, only one chance to show you the depth of what I feel for you. Because loving you isn't a choice anymore… it's who I have become.
+                </p>
+            </div>
+        </section>
+
+        <!-- New Section: My First Sight on YOU -->
+        <section id="first-sight-section" class="section text-center hidden w-full">
+            <h2 class="text-3xl md:text-4xl font-extrabold text-red-600 mb-6">My first sight on YOU</h2>
+            <div class="text-lg text-gray-700 leading-relaxed max-w-5xl mx-auto space-y-4">
+                <p>
+                    Dear You,
+                </p>
+                <p>
+                    It was the 14th of August, 2023. 8:05 AM.
+                </p>
+                <p>
+                    My first day of college.
+                    I didn’t know a single soul. Just a room full of strangers like me, gathered for the Soft Skills class in AB1-502. The class was loud, chaotic and then, you walked in.
+                </p>
+                <p>
+                    You entered the classroom with a smile that lit up the room, that beautiful smile of yours, showing those adorable teeth that I’d come to remember so well. Sir asked why you were late, and you simply replied, “Sorry,” and walked in. You didn’t seem nervous or hurried. You carried yourself with a grace I didn’t notice at first ,not then, at least.
+                </p>
+                <p>
+                    I honestly don’t even remember what I wore that day. But I remember what you wore like it’s carved into my memory. A long, soft green gown ,the lightest shade I’ve ever seen and a yellow Quechua bag hanging behind you. You jumped cutely, almost playfully, as you walked to the last bench and sat there. So effortless. So you.
+                </p>
+                <p>
+                    Back then, I didn’t feel anything. You were just another beautiful girl in the crowd. But as the days passed, as I began seeing you more ,hearing your voice, noticing your mannerisms, feeling the aura you carried , something changed in me. My feelings grew, slowly at first, and then all at once.
+                </p>
+                <p>
+                    I fell in love with you. Truly, deeply.
+                </p>
+                <p>
+                    But along the way, I made mistakes. The kind of mistakes that can’t be undone. I hurt you, knowingly or unknowingly, and those moments became reasons for you to hate me, maybe even despise me. You blocked me from every social media platform, even Google Pay. It’s strange how painful digital silence can feel when it comes from the one person who means the most.
+                </p>
+                <p>
+                    I know you don’t want me around. I know you don’t even want me to exist in your world anymore. One incident still haunts me, the day I saw you lying down on your desk, not looking well. I gathered the courage to walk up to you and ask if you had a fever. And you replied, “I’m not supposed to tell this to you.”
+                </p>
+                <p>
+                    I just said, “Okay,” and walked away. But what I didn’t show was how that one sentence shattered me inside. I can’t explain the pain ,it felt like my heart had been ripped apart. That moment made me question everything. I genuinely felt that dying would’ve been easier than feeling that kind of pain.
+                </p>
+                <p>
+                    And yet, here I am, writing this. Not to beg for your forgiveness. Not to force you to change how you feel. But just to say that my love for you has always been real. Flawed, yes, but true. You may hate me now, and maybe forever. But a part of me will always carry your smile, your voice, and your memory, as both a lesson and a feeling I’ll never forget.
+                </p>
+                <p>
+                    With nothing but sincerity,
+                    Someone who truly loved you
+                </p>
+            </div>
+        </section>
+
+        <section id="reasons-section" class="section text-center hidden w-full">
+            <h2 class="text-3xl md:text-4xl font-extrabold text-pink-600 mb-8">Countless Reasons Why I Love You...</h2>
+            <ul class="list-none p-0 space-y-4 text-lg text-gray-700 max-w-xl mx-auto">
+                <!-- Each list item now has a span for the text and a button for elaboration -->
+                <li class="reason-item bg-pink-50 px-6 py-3 rounded-full shadow-sm flex items-center justify-between flex-wrap gap-2">
+                    <span class="reason-text">Your infectious laughter that brightens any room.</span>
+                    <button class="elaborate-button bg-yellow-400 hover:bg-yellow-500 text-gray-800 text-sm font-bold py-1 px-3 rounded-full shadow-md transition duration-200 ease-in-out">✨ Elaborate</button>
+                    <div class="elaboration-text text-sm text-gray-600 mt-2 hidden w-full text-left p-2 bg-yellow-50 rounded-lg"></div>
+                    <div class="loading-indicator text-sm text-gray-500 mt-2 hidden">Generating...</div>
+                </li>
+                <li class="reason-item bg-pink-50 px-6 py-3 rounded-full shadow-sm flex items-center justify-between flex-wrap gap-2">
+                    <span class="reason-text">Your incredible kindness and empathy towards everyone.</span>
+                    <button class="elaborate-button bg-yellow-400 hover:bg-yellow-500 text-gray-800 text-sm font-bold py-1 px-3 rounded-full shadow-md transition duration-300 ease-in-out">✨ Elaborate</button>
+                    <div class="elaboration-text text-sm text-gray-600 mt-2 hidden w-full text-left p-2 bg-yellow-50 rounded-lg"></div>
+                    <div class="loading-indicator text-sm text-gray-500 mt-2 hidden">Generating...</div>
+                </li>
+                <li class="reason-item bg-pink-50 px-6 py-3 rounded-full shadow-sm flex items-center justify-between flex-wrap gap-2">
+                    <span class="reason-text">The way you always know how to make me feel seen and understood.</span>
+                    <button class="elaborate-button bg-yellow-400 hover:bg-yellow-500 text-gray-800 text-sm font-bold py-1 px-3 rounded-full shadow-md transition duration-200 ease-in-out">✨ Elaborate</button>
+                    <div class="elaboration-text text-sm text-gray-600 mt-2 hidden w-full text-left p-2 bg-yellow-50 rounded-lg"></div>
+                    <div class="loading-indicator text-sm text-gray-500 mt-2 hidden">Generating...</div>
+                </li>
+                <li class="reason-item bg-pink-50 px-6 py-3 rounded-full shadow-sm flex items-center justify-between flex-wrap gap-2">
+                    <span class="reason-text">Your passion for Dance, Listening Music(Melophile)</span>
+                    <button class="elaborate-button bg-yellow-400 hover:bg-yellow-500 text-gray-800 text-sm font-bold py-1 px-3 rounded-full shadow-md transition duration-300 ease-in-out">✨ Elaborate</button>
+                    <div class="elaboration-text text-sm text-gray-600 mt-2 hidden w-full text-left p-2 bg-yellow-50 rounded-lg"></div>
+                    <div class="loading-indicator text-sm text-gray-500 mt-2 hidden">Generating...</div>
+                </li>
+                <li class="reason-item bg-pink-50 px-6 py-3 rounded-full shadow-sm flex items-center justify-between flex-wrap gap-2">
+                    <span class="reason-text">Every single moment I see you in a stunned manner.</span>
+                    <button class="elaborate-button bg-yellow-400 hover:bg-yellow-500 text-gray-800 text-sm font-bold py-1 px-3 rounded-full shadow-md transition duration-300 ease-in-out">✨ Elaborate</button>
+                    <div class="elaboration-text text-sm text-gray-600 mt-2 hidden w-full text-left p-2 bg-yellow-50 rounded-lg"></div>
+                    <div class="loading-indicator text-sm text-gray-500 mt-2 hidden">Generating...</div>
+                </li>
+            </ul>
+        </section>
+
+        <section id="proposal-section" class="section text-center py-12 bg-pink-50 rounded-3xl shadow-xl hidden w-full">
+            <h2 id="proposal-intro-heading" class="text-4xl md:text-5xl font-extrabold text-pink-700 mb-8 leading-tight">
+                My heart has found its home with you.
+            </h2>
+            <p id="proposal-intro-text" class="text-xl md:text-2xl text-gray-800 mb-10 max-w-3xl mx-auto">
+                Every day with you is a gift, and I can't imagine a future without you by my side. You are the most wonderful person I've ever known, and I want to spend forever making you happy.
+            </p>
+            <h3 id="proposal-question" class="text-5xl md:text-6xl font-extrabold text-pink-800 mb-12 animate-pulse">
+                Will you marry me?
+            </h3>
+            <button id="marry-me-button" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-4 px-10 rounded-full shadow-xl transform transition duration-300 ease-in-out hover:scale-110 focus:outline-none focus:ring-4 focus:ring-purple-300 text-2xl">
+                YES! A Thousand Times YES! 💍
+            </button>
+        </section>
+
+        <section id="celebration-section" class="section hidden text-center py-12 w-full">
+            <h2 class="text-4xl md:text-5xl font-extrabold text-green-600 mb-6">SHE SAID YES! 🎉</h2>
+            <p class="text-xl text-gray-700">My heart is overflowing with joy! Thank you for making me the happiest person alive.</p>
+            <div id="confetti-container" class="relative w-full h-64 mt-8 overflow-hidden">
+                <!-- Confetti particles will be generated here by JS -->
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Get references to key DOM elements
+            const homepage = document.getElementById('homepage');
+            const mainContent = document.getElementById('main-content');
+            const yesButton = document.getElementById('yes-button');
+            const noButton = document.getElementById('no-button');
+            const marryMeButton = document.getElementById('marry-me-button');
+            const celebrationSection = document.getElementById('celebration-section');
+            const confettiContainer = document.getElementById('confetti-container');
+
+            // Get references to the new navigation buttons and all content sections
+            const navButtons = document.querySelectorAll('.nav-button');
+            const sections = document.querySelectorAll('.section');
+
+            // Get specific elements within the proposal section
+            const proposalSection = document.getElementById('proposal-section');
+            const proposalIntroHeading = document.getElementById('proposal-intro-heading');
+            const proposalIntroText = document.getElementById('proposal-intro-text');
+            const proposalQuestion = document.getElementById('proposal-question');
+
+            // Get all elaborate buttons
+            const elaborateButtons = document.querySelectorAll('.elaborate-button');
+
+
+            // --- Part 1: Homepage Logic (The "Do you love me?" question) ---
+
+            /**
+             * Moves the "No" button to a random position within its parent container (#homepage).
+             * This makes it difficult for the user to click "No".
+             */
+            function moveNoButton() {
+                const homepageRect = homepage.getBoundingClientRect(); // Get dimensions of the homepage container
+                const buttonRect = noButton.getBoundingClientRect(); // Get dimensions of the "No" button
+
+                // Calculate the maximum possible top and left positions for the button
+                // We subtract button's width/height and add a small padding (20px)
+                // to ensure it stays fully visible within the homepage.
+                const maxLeft = homepageRect.width - buttonRect.width - 20;
+                const maxTop = homepageRect.height - buttonRect.height - 20;
+
+                // Define minimum positions (padding from top/left)
+                const minLeft = 20;
+                const minTop = 20;
+
+                // Generate random positions within the calculated bounds
+                // Math.random() * (max - min) + min ensures the number is between min and max
+                let newX = Math.random() * (maxLeft - minLeft) + minLeft;
+                let newY = Math.random() * (maxTop - minTop) + minTop;
+
+                // Apply the new positions using inline styles
+                noButton.style.left = `${newX}px`;
+                noButton.style.top = `${newY}px`;
+            }
+
+            // Event listener for when the mouse hovers over the "No" button
+            noButton.addEventListener('mouseover', moveNoButton);
+            // Event listener for when the "No" button is clicked (it will move again)
+            noButton.addEventListener('click', (e) => {
+                e.preventDefault(); // Prevent any default click behavior (like form submission)
+                moveNoButton(); // Move it again if clicked
+                console.log("Nice try! You can't say no! 😉"); // Console message for debugging/fun
+            });
+
+            // Event listener for the "Yes" button click
+            yesButton.addEventListener('click', () => {
+                // Fade out the homepage
+                homepage.style.opacity = '0';
+                homepage.style.pointerEvents = 'none'; // Disable interactions on the fading homepage
+
+                // After the homepage fades out, hide it and reveal the main content
+                setTimeout(() => {
+                    homepage.classList.add('hidden'); // Hide homepage completely
+                    mainContent.classList.remove('hidden'); // Make main content visible (but still opaque)
+
+                    // Trigger fade-in for main content
+                    setTimeout(() => {
+                        mainContent.style.opacity = '1';
+                        // No sections are activated here initially; user will click navigation buttons.
+                    }, 50); // Small delay to ensure display property is set before transition
+                }, 500); // Duration of the homepage fade-out (matches CSS transition)
+            });
+
+            // --- Part 2: Main Content Logic (Navigation and Section Revealing) ---
+
+            /**
+             * Shows a specific section and hides all other content sections.
+             * Applies 'active' class to trigger CSS fade-in animation.
+             * Handles special display logic for the proposal section.
+             * @param {string} targetId The ID of the section to show (or a special identifier like 'proposal-question-only').
+             */
+            function showSection(targetId) {
+                sections.forEach(section => {
+                    section.classList.remove('active'); // Remove active class from all sections
+                    section.classList.add('hidden'); // Hide all sections
+                });
+
+                // Reset visibility for proposal section elements first
+                // This ensures that when switching between proposal views, elements are correctly hidden/shown
+                proposalIntroHeading.classList.add('hidden');
+                proposalIntroText.classList.add('hidden');
+                proposalQuestion.classList.add('hidden');
+                marryMeButton.classList.add('hidden');
+
+                // Special handling for the proposal section based on which button was clicked
+                if (targetId === 'proposal-full') {
+                    proposalSection.classList.remove('hidden');
+                    // Ensure all parts of the proposal section are visible
+                    proposalIntroHeading.classList.remove('hidden');
+                    proposalIntroText.classList.remove('hidden');
+                    proposalQuestion.classList.remove('hidden'); // 'Will you marry me?' is shown here
+                    marryMeButton.classList.remove('hidden'); // Ensure the marry me button is also visible
+
+                    setTimeout(() => {
+                        proposalSection.classList.add('active'); // Trigger fade-in
+                    }, 50);
+                } else if (targetId === 'proposal-question-only') {
+                    proposalSection.classList.remove('hidden');
+                    // Only show the question and the marry me button
+                    proposalQuestion.classList.remove('hidden');
+                    marryMeButton.classList.remove('hidden'); // Ensure the marry me button is also visible
+
+                    setTimeout(() => {
+                        proposalSection.classList.add('active'); // Trigger fade-in
+                    }, 50);
+                } else {
+                    // For other sections (welcome-section, reasons-section, first-sight-section)
+                    const targetSection = document.getElementById(targetId);
+                    if (targetSection) {
+                        targetSection.classList.remove('hidden');
+                        setTimeout(() => {
+                            targetSection.classList.add('active'); // Trigger fade-in
+                        }, 50);
+                    }
+                }
+            }
+
+            // Add event listeners to the new navigation buttons
+            navButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const targetId = e.target.dataset.target; // Get the target section ID from the data-target attribute
+                    showSection(targetId); // Call the function to show the corresponding section
+                });
+            });
+
+            // --- Gemini API Integration: Elaborate on Reasons ---
+            elaborateButtons.forEach(button => {
+                button.addEventListener('click', async (e) => {
+                    const listItem = e.target.closest('.reason-item');
+                    const reasonTextSpan = listItem.querySelector('.reason-text');
+                    const elaborationTextDiv = listItem.querySelector('.elaboration-text');
+                    const loadingIndicator = listItem.querySelector('.loading-indicator');
+
+                    const reason = reasonTextSpan.textContent.trim();
+
+                    // Toggle visibility of elaboration
+                    if (elaborationTextDiv.classList.contains('hidden')) {
+                        // If hidden, show loading and fetch
+                        loadingIndicator.classList.remove('hidden');
+                        elaborationTextDiv.classList.add('hidden'); // Hide previous elaboration if any
+
+                        try {
+                            const prompt = `Elaborate on the following reason for loving someone: "${reason}". Make it sound like a personal, romantic reflection, about 2-3 sentences long. Focus on the emotional impact and why this quality is cherished.`;
+                            let chatHistory = [];
+                            chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+
+                            const payload = { contents: chatHistory };
+                            const apiKey = ""; // Canvas will automatically provide the API key
+                            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                            const response = await fetch(apiUrl, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(payload)
+                            });
+
+                            const result = await response.json();
+
+                            if (result.candidates && result.candidates.length > 0 &&
+                                result.candidates[0].content && result.candidates[0].content.parts &&
+                                result.candidates[0].content.parts.length > 0) {
+                                const text = result.candidates[0].content.parts[0].text;
+                                elaborationTextDiv.textContent = text;
+                                elaborationTextDiv.classList.remove('hidden');
+                            } else {
+                                elaborationTextDiv.textContent = "Could not elaborate at this time. Please try again.";
+                                elaborationTextDiv.classList.remove('hidden');
+                                console.error("Gemini API response structure unexpected:", result);
+                            }
+                        } catch (error) {
+                            elaborationTextDiv.textContent = "Error generating elaboration. Please try again.";
+                            elaborationTextDiv.classList.remove('hidden');
+                            console.error("Error calling Gemini API:", error);
+                        } finally {
+                            loadingIndicator.classList.add('hidden');
+                        }
+                    } else {
+                        // If visible, hide it
+                        elaborationTextDiv.classList.add('hidden');
+                        elaborationTextDiv.textContent = ''; // Clear content when hidden
+                    }
+                });
+            });
+
+
+            // --- Final Proposal Logic ---
+            marryMeButton.addEventListener('click', () => {
+                // Fade out the proposal section
+                proposalSection.classList.remove('active');
+                proposalSection.style.opacity = '0'; // Start fade out
+
+                // After proposal section fades, hide it and show the celebration section
+                setTimeout(() => {
+                    proposalSection.classList.add('hidden'); // Hide completely
+
+                    celebrationSection.classList.remove('hidden'); // Make celebration section visible
+                    setTimeout(() => {
+                        celebrationSection.classList.add('active'); // Trigger fade-in for celebration
+                        triggerConfetti(); // Start the confetti animation!
+                    }, 50); // Small delay for display property to apply
+                }, 500); // Matches fade-out duration
+            });
+
+            // --- Confetti Animation (Simple JavaScript Confetti) ---
+            /**
+             * Generates and animates confetti particles on the screen.
+             */
+            function triggerConfetti() {
+                // Define a set of appealing confetti colors
+                const colors = ['#FFD700', '#FF69B4', '#8A2BE2', '#00CED1', '#FF4500', '#F0F8FF']; // Gold, HotPink, BlueViolet, DarkTurquoise, OrangeRed, AliceBlue
+                const numConfetti = 150; // Number of confetti particles to generate
+
+                for (let i = 0; i < numConfetti; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.classList.add('confetti-particle'); // Add base confetti styling class
+
+                    // Set random color, size, and initial position
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.left = `${Math.random() * 100}%`; // Random horizontal start position
+                    confetti.style.top = `${Math.random() * 100}%`; // Random vertical start position within container
+                    confetti.style.width = `${Math.random() * 8 + 4}px`; // Random width between 4px and 12px
+                    confetti.style.height = `${Math.random() * 8 + 4}px`; // Random height between 4px and 12px
+                    confetti.style.opacity = Math.random() * 0.7 + 0.3; // Random opacity between 0.3 and 1
+                    confetti.style.transform = `rotate(${Math.random() * 360}deg)`; // Random initial rotation
+                    confetti.style.position = 'absolute'; // Absolute positioning within its container
+                    confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px'; // Randomly make some round, some square
+
+                    confettiContainer.appendChild(confetti); // Add confetti to the container
+
+                    // Animate confetti using Web Animations API for smooth performance
+                    const animationDuration = Math.random() * 2 + 3; // Random duration between 3 and 5 seconds
+                    const delay = Math.random() * 0.5; // Random delay before animation starts (0-0.5 seconds)
+                    const endY = window.innerHeight + 50; // Target Y position (off-screen bottom)
+                    const endXOffset = (Math.random() - 0.5) * 400; // Random horizontal drift (-200px to +200px)
+
+                    confetti.animate([
+                        // Keyframes for the animation
+                        { transform: `translateY(0) translateX(0) rotate(${Math.random() * 360}deg)`, opacity: 1 },
+                        { transform: `translateY(${endY}px) translateX(${endXOffset}px) rotate(${Math.random() * 720 + 360}deg)`, opacity: 0 }
+                    ], {
+                        duration: animationDuration * 1000, // Convert seconds to milliseconds
+                        easing: 'ease-out', // Smooth deceleration
+                        delay: delay * 1000, // Convert seconds to milliseconds
+                        fill: 'forwards' // Retain the final state of the animation
+                    });
+
+                    // Remove confetti from DOM after its animation completes to prevent memory leaks
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, (animationDuration + delay) * 1000);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
