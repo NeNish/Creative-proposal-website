@@ -4,68 +4,59 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>A Special Question for You...</title>
-    <!-- Tailwind CSS CDN for quick styling -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Font: Inter for a clean, modern look -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        /* Base styles for the body to center content and apply font */
         body {
             font-family: 'Inter', sans-serif;
-            overflow-x: hidden; /* Prevent horizontal scroll */
-            background-color: #f8fafc; /* Light blue-gray background */
+            overflow-x: hidden;
+            /* Changed background to a heartwarming gradient */
+            background: linear-gradient(to bottom right, #fbcfe8, #d8b4fe); /* Soft pink to light purple */
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh; /* Ensure it takes full viewport height */
+            min-height: 100vh;
             margin: 0;
-            padding: 20px; /* Add some padding for smaller screens */
+            padding: 20px;
             box-sizing: border-box;
-            position: relative; /* Needed for confetti positioning */
+            position: relative;
         }
 
-        /* Styling for the main content containers */
-        #homepage, #main-content {
-            transition: opacity 0.5s ease-in-out; /* Smooth fade transition */
+        #homepage, #main-content, #pin-input-section, #quiz-section {
+            transition: opacity 0.5s ease-in-out;
             width: 100%;
-            max-width: 1200px; /* Increased max width for content on larger screens */
+            max-width: 1200px;
         }
 
-        /* Specific styling for the homepage layout */
         #homepage {
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             text-align: center;
-            min-height: calc(100vh - 40px); /* Adjust for body padding */
-            position: relative; /* Crucial for absolute positioning of the 'No' button */
+            min-height: calc(100vh - 40px);
+            position: relative;
         }
 
-        /* Styling for the 'No' button to allow absolute positioning and smooth movement */
         #no-button {
             position: absolute;
-            transition: all 0.1s ease-out; /* Fast transition for the "jump" effect */
-            /* Initial positioning, will be overridden by JS */
+            transition: all 0.1s ease-out;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
         }
 
-        /* Styles for sections within the main content, for staggered reveal animation */
         .section {
-            opacity: 0; /* Initially hidden */
-            transform: translateY(20px); /* Slightly moved down */
-            transition: opacity 0.8s ease-out, transform 0.8s ease-out; /* Smooth fade and slide up */
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
         }
 
-        /* Class to activate section visibility */
         .section.active {
             opacity: 1;
             transform: translateY(0);
         }
 
-        /* Custom scrollbar for a nicer aesthetic */
         ::-webkit-scrollbar {
             width: 8px;
         }
@@ -74,27 +65,27 @@
             border-radius: 10px;
         }
         ::-webkit-scrollbar-thumb {
-            background: #cbd5e1; /* Tailwind gray-300 */
+            background: #cbd5e1;
             border-radius: 10px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8; /* Tailwind gray-400 */
+            background: #94a3b8;
         }
 
-        /* Confetti particle styling */
         .confetti-particle {
             position: absolute;
-            animation: fall linear forwards; /* Animation defined below */
-            z-index: 1000; /* Ensure confetti is on top */
+            animation: fall linear forwards;
+            z-index: 1000;
         }
 
-        /* Keyframe animation for confetti falling */
         @keyframes fall {
             to {
-                transform: translateY(100vh) rotate(720deg); /* Fall down and spin */
-                opacity: 0; /* Fade out */
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
             }
         }
+
+        /* Removed Heart animation styles */
     </style>
 </head>
 <body>
@@ -103,18 +94,49 @@
     <div id="homepage" class="bg-white p-8 md:p-12 rounded-3xl shadow-xl flex flex-col items-center justify-center space-y-8">
         <h1 class="text-4xl md:text-5xl font-extrabold text-gray-800 leading-tight">Do you love me?</h1>
         <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-6 w-full justify-center">
-            <!-- Yes button: Leads to the main content -->
             <button id="yes-button" class="bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition duration-300 ease-in-out hover:scale-105 focus:outline-none focus:ring-4 focus:ring-pink-300">
                 Yes! ❤️
             </button>
-            <!-- No button: Moves away when hovered or clicked -->
             <button id="no-button" class="bg-gray-400 hover:bg-gray-500 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition duration-300 ease-in-out hover:scale-105 focus:outline-none focus:ring-4 focus:ring-gray-300">
                 No 💔
             </button>
         </div>
     </div>
 
-    <!-- Main Content: Revealed after clicking "Yes" -->
+    <!-- PIN Input Section -->
+    <div id="pin-input-section" class="hidden opacity-0 bg-white p-8 md:p-12 rounded-3xl shadow-xl flex flex-col items-center justify-center space-y-6 text-center">
+        <h2 class="text-3xl md:text-4xl font-extrabold text-purple-600 mb-4">Enter the Secret PIN</h2>
+        <p class="text-lg text-gray-700">A special code is needed to unlock the next part of this journey.</p>
+        <input type="password" id="pin-input" maxlength="4" class="w-48 p-3 text-center text-2xl font-bold rounded-lg border-2 border-purple-300 focus:outline-none focus:ring-4 focus:ring-purple-200" inputmode="numeric" pattern="[0-9]*">
+        <button id="submit-pin-button" class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition duration-300 ease-in-out hover:scale-105 focus:outline-none focus:ring-4 focus:ring-purple-300">
+            Unlock My Heart
+        </button>
+        <p id="pin-error-message" class="text-red-500 text-sm mt-2 hidden">Incorrect PIN. Please try again.</p>
+    </div>
+
+    <!-- Quiz Section -->
+    <div id="quiz-section" class="hidden opacity-0 bg-white p-8 md:p-12 rounded-3xl shadow-xl flex flex-col items-center space-y-8 text-center">
+        <h2 class="text-3xl md:text-4xl font-extrabold text-teal-600 mb-4">Let's See How Well You Know My Heart...</h2>
+        <p id="quiz-progress" class="text-gray-600 text-lg font-semibold">Quiz 1 of 5</p>
+        <div id="quiz-content" class="w-full max-w-2xl space-y-6">
+            <p id="quiz-question" class="text-2xl font-semibold text-gray-800"></p>
+            <div id="quiz-options" class="flex flex-col space-y-4">
+            </div>
+            <button id="next-quiz-button" class="bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition duration-300 ease-in-out hover:scale-105 focus:outline-none focus:ring-4 focus:ring-teal-300 hidden">
+                Next Quiz
+            </button>
+            <p id="quiz-feedback" class="text-lg mt-4 hidden"></p>
+        </div>
+        <div id="quiz-completion-message" class="hidden text-center space-y-4">
+            <h3 class="text-3xl font-extrabold text-green-600">You're incredible!</h3>
+            <p class="text-xl text-gray-700">You've answered all the questions. Your understanding truly touches my soul.</p>
+            <button id="continue-to-proposal-button" class="bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition duration-300 ease-in-out hover:scale-105 focus:outline-none focus:ring-4 focus:ring-pink-300">
+                Continue to the Special Message
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content: Revealed after quizzes are completed -->
     <div id="main-content" class="hidden opacity-0 bg-white p-8 md:p-12 rounded-3xl shadow-xl space-y-12 flex flex-col items-center">
 
         <!-- New Navigation Buttons Container -->
@@ -123,7 +145,6 @@
             <button id="btn-first-sight" data-target="first-sight-section" class="nav-button bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-6 rounded-full shadow-lg transition duration-300 ease-in-out hover:scale-105 focus:outline-none focus:ring-4 focus:ring-red-300">My first sight on YOU</button>
             <button id="btn-reasons" data-target="reasons-section" class="nav-button bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-full shadow-lg transition duration-300 ease-in-out hover:scale-105 focus:outline-none focus:ring-4 focus:ring-green-300">Why I Love You</button>
             <button id="btn-home-with-you" data-target="proposal-full" class="nav-button bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-6 rounded-full shadow-lg transition duration-300 ease-in-out hover:scale-105 focus:outline-none focus:ring-4 focus:ring-purple-300">My heart has found its home with you and THE BIGGEST QUESTION</button>
-            <!-- REMOVED: <button id="btn-big-question" data-target="proposal-question-only" class="nav-button bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-6 rounded-full shadow-lg transition duration-300 ease-in-out hover:scale-105 focus:outline-none focus:ring-4 focus:ring-orange-300">The Big Question</button> -->
         </div>
 
         <!-- Section 1: Welcome Message -->
@@ -214,7 +235,6 @@
         <section id="reasons-section" class="section text-center hidden w-full">
             <h2 class="text-3xl md:text-4xl font-extrabold text-pink-600 mb-8">Countless Reasons Why I Love You...</h2>
             <ul class="list-none p-0 space-y-4 text-lg text-gray-700 max-w-xl mx-auto">
-                <!-- Each list item now has a span for the text and a button for elaboration -->
                 <li class="reason-item bg-pink-50 px-6 py-3 rounded-full shadow-sm flex items-center justify-between flex-wrap gap-2">
                     <span class="reason-text">Your infectious laughter that brightens any room.</span>
                     <button class="elaborate-button bg-yellow-400 hover:bg-yellow-500 text-gray-800 text-sm font-bold py-1 px-3 rounded-full shadow-md transition duration-200 ease-in-out">✨ Elaborate</button>
@@ -267,7 +287,6 @@
             <h2 class="text-4xl md:text-5xl font-extrabold text-green-600 mb-6">SHE SAID YES! 🎉</h2>
             <p class="text-xl text-gray-700">My heart is overflowing with joy! Thank you for making me the happiest person alive.</p>
             <div id="confetti-container" class="relative w-full h-64 mt-8 overflow-hidden">
-                <!-- Confetti particles will be generated here by JS -->
             </div>
         </section>
 
@@ -275,7 +294,6 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Get references to key DOM elements
             const homepage = document.getElementById('homepage');
             const mainContent = document.getElementById('main-content');
             const yesButton = document.getElementById('yes-button');
@@ -284,141 +302,254 @@
             const celebrationSection = document.getElementById('celebration-section');
             const confettiContainer = document.getElementById('confetti-container');
 
-            // Get references to the new navigation buttons and all content sections
+            const pinInputSection = document.getElementById('pin-input-section');
+            const pinInput = document.getElementById('pin-input');
+            const submitPinButton = document.getElementById('submit-pin-button');
+            const pinErrorMessage = document.getElementById('pin-error-message');
+
+            const quizSection = document.getElementById('quiz-section');
+            const quizProgress = document.getElementById('quiz-progress');
+            const quizQuestion = document.getElementById('quiz-question');
+            const quizOptions = document.getElementById('quiz-options');
+            const nextQuizButton = document.getElementById('next-quiz-button');
+            const quizFeedback = document.getElementById('quiz-feedback');
+            const quizCompletionMessage = document.getElementById('quiz-completion-message');
+            const continueToProposalButton = document.getElementById('continue-to-proposal-button');
+            const quizContent = document.getElementById('quiz-content');
+
             const navButtons = document.querySelectorAll('.nav-button');
             const sections = document.querySelectorAll('.section');
 
-            // Get specific elements within the proposal section
             const proposalSection = document.getElementById('proposal-section');
             const proposalIntroHeading = document.getElementById('proposal-intro-heading');
             const proposalIntroText = document.getElementById('proposal-intro-text');
             const proposalQuestion = document.getElementById('proposal-question');
 
-            // Get all elaborate buttons
             const elaborateButtons = document.querySelectorAll('.elaborate-button');
 
+            const CORRECT_PIN = "1109";
+            let currentQuizIndex = 0;
+            let selectedAnswer = null;
 
-            // --- Part 1: Homepage Logic (The "Do you love me?" question) ---
+            const quizzes = [
+                {
+                    question: "What's the first thing that captivated me about you?",
+                    options: ["Your radiant smile", "Your sparkling eyes", "Your graceful walk", "All of the above"],
+                    correctAnswer: "All of the above",
+                    feedback: {
+                        correct: "Exactly! Every part of you is captivating.",
+                        incorrect: "Close, but it was truly everything about you that drew me in."
+                    }
+                },
+                {
+                    question: "If our love were a song, what genre would it be?",
+                    options: ["A heartfelt ballad", "An upbeat pop anthem", "A soulful jazz piece", "A beautiful symphony"],
+                    correctAnswer: "A beautiful symphony",
+                    feedback: {
+                        correct: "Yes, a symphony – complex, harmonious, and deeply moving.",
+                        incorrect: "Good guess, but our love is a grander composition."
+                    }
+                },
+                {
+                    question: "What's my favorite way to spend time with you?",
+                    options: ["Quiet conversations", "Adventurous outings", "Simply being in your presence", "Sharing a meal"],
+                    correctAnswer: "Simply being in your presence",
+                    feedback: {
+                        correct: "You know me so well! Just being near you is my favorite.",
+                        incorrect: "Those are great, but my favorite is even simpler."
+                    }
+                },
+                {
+                    question: "What quality of yours do I admire most?",
+                    options: ["Your intelligence", "Your kindness", "Your strength", "All of the above"],
+                    correctAnswer: "All of the above",
+                    feedback: {
+                        correct: "Absolutely! You possess all these incredible qualities.",
+                        incorrect: "It's hard to pick just one, isn't it? Because it's all of them."
+                    }
+                },
+                {
+                    question: "What does 'forever' mean to me, with you?",
+                    options: ["A promise", "A journey", "A beautiful beginning", "An endless dream"],
+                    correctAnswer: "A beautiful beginning",
+                    feedback: {
+                        correct: "Yes, with you, forever isn't an end, but a continuous, beautiful start.",
+                        incorrect: "It's more than just a concept; it's the start of everything wonderful."
+                    }
+                }
+            ];
 
-            /**
-             * Moves the "No" button to a random position within its parent container (#homepage).
-             * This makes it difficult for the user to click "No".
-             */
+            // Removed createHeart, startHeartAnimation, and stopHeartAnimation functions
+            // Removed initial call to startHeartAnimation()
+
             function moveNoButton() {
-                const homepageRect = homepage.getBoundingClientRect(); // Get dimensions of the homepage container
-                const buttonRect = noButton.getBoundingClientRect(); // Get dimensions of the "No" button
+                const homepageRect = homepage.getBoundingClientRect();
+                const buttonRect = noButton.getBoundingClientRect();
 
-                // Calculate the maximum possible top and left positions for the button
-                // We subtract button's width/height and add a small padding (20px)
-                // to ensure it stays fully visible within the homepage.
                 const maxLeft = homepageRect.width - buttonRect.width - 20;
                 const maxTop = homepageRect.height - buttonRect.height - 20;
 
-                // Define minimum positions (padding from top/left)
                 const minLeft = 20;
                 const minTop = 20;
 
-                // Generate random positions within the calculated bounds
-                // Math.random() * (max - min) + min ensures the number is between min and max
                 let newX = Math.random() * (maxLeft - minLeft) + minLeft;
                 let newY = Math.random() * (maxTop - minTop) + minTop;
 
-                // Apply the new positions using inline styles
                 noButton.style.left = `${newX}px`;
                 noButton.style.top = `${newY}px`;
             }
 
-            // Event listener for when the mouse hovers over the "No" button
             noButton.addEventListener('mouseover', moveNoButton);
-            // Event listener for when the "No" button is clicked (it will move again)
             noButton.addEventListener('click', (e) => {
-                e.preventDefault(); // Prevent any default click behavior (like form submission)
-                moveNoButton(); // Move it again if clicked
-                console.log("Nice try! You can't say no! 😉"); // Console message for debugging/fun
+                e.preventDefault();
+                moveNoButton();
+                console.log("Nice try! You can't say no! 😉");
             });
 
-            // Event listener for the "Yes" button click
             yesButton.addEventListener('click', () => {
-                // Fade out the homepage
                 homepage.style.opacity = '0';
-                homepage.style.pointerEvents = 'none'; // Disable interactions on the fading homepage
+                homepage.style.pointerEvents = 'none';
 
-                // After the homepage fades out, hide it and reveal the main content
                 setTimeout(() => {
-                    homepage.classList.add('hidden'); // Hide homepage completely
-                    mainContent.classList.remove('hidden'); // Make main content visible (but still opaque)
-
-                    // Trigger fade-in for main content
+                    homepage.classList.add('hidden');
+                    pinInputSection.classList.remove('hidden');
                     setTimeout(() => {
-                        mainContent.style.opacity = '1';
-                        // No sections are activated here initially; user will click navigation buttons.
-                    }, 50); // Small delay to ensure display property is set before transition
-                }, 500); // Duration of the homepage fade-out (matches CSS transition)
+                        pinInputSection.style.opacity = '1';
+                        pinInput.focus();
+                    }, 50);
+                }, 500);
             });
 
-            // --- Part 2: Main Content Logic (Navigation and Section Revealing) ---
+            submitPinButton.addEventListener('click', () => {
+                const enteredPin = pinInput.value;
+                if (enteredPin === CORRECT_PIN) {
+                    pinErrorMessage.classList.add('hidden');
+                    pinInputSection.style.opacity = '0';
+                    pinInputSection.style.pointerEvents = 'none';
 
-            /**
-             * Shows a specific section and hides all other content sections.
-             * Applies 'active' class to trigger CSS fade-in animation.
-             * Handles special display logic for the proposal section.
-             * @param {string} targetId The ID of the section to show (or a special identifier like 'proposal-question-only').
-             */
-            function showSection(targetId) {
-                sections.forEach(section => {
-                    section.classList.remove('active'); // Remove active class from all sections
-                    section.classList.add('hidden'); // Hide all sections
+                    setTimeout(() => {
+                        pinInputSection.classList.add('hidden');
+                        quizSection.classList.remove('hidden');
+                        setTimeout(() => {
+                            quizSection.style.opacity = '1';
+                            loadQuiz(currentQuizIndex);
+                        }, 50);
+                    }, 500);
+                } else {
+                    pinErrorMessage.classList.remove('hidden');
+                    pinInput.value = '';
+                }
+            });
+
+            function loadQuiz(index) {
+                if (index < quizzes.length) {
+                    const quiz = quizzes[index];
+                    quizProgress.textContent = `Quiz ${index + 1} of ${quizzes.length}`;
+                    quizQuestion.textContent = quiz.question;
+                    quizOptions.innerHTML = '';
+                    quizFeedback.classList.add('hidden');
+                    nextQuizButton.classList.add('hidden');
+                    selectedAnswer = null;
+
+                    quiz.options.forEach(option => {
+                        const button = document.createElement('button');
+                        button.textContent = option;
+                        button.classList.add('bg-blue-100', 'hover:bg-blue-200', 'text-blue-800', 'font-semibold', 'py-3', 'px-6', 'rounded-lg', 'shadow-md', 'transition', 'duration-200', 'ease-in-out', 'transform', 'hover:scale-105', 'focus:outline-none', 'focus:ring-4', 'focus:ring-blue-100', 'text-left');
+                        button.addEventListener('click', () => selectAnswer(button, option, quiz.correctAnswer, quiz.feedback));
+                        quizOptions.appendChild(button);
+                    });
+
+                    Array.from(quizOptions.children).forEach(button => button.disabled = false);
+
+                } else {
+                    quizContent.classList.add('hidden');
+                    quizCompletionMessage.classList.remove('hidden');
+                }
+            }
+
+            function selectAnswer(clickedButton, selectedOption, correctAnswer, feedback) {
+                Array.from(quizOptions.children).forEach(button => {
+                    button.disabled = true;
+                    button.classList.remove('bg-blue-200', 'ring-blue-100');
+                    if (button.textContent === correctAnswer) {
+                        button.classList.add('bg-green-200', 'text-green-800');
+                    } else if (button.textContent === selectedOption) {
+                        button.classList.add('bg-red-200', 'text-red-800');
+                    }
                 });
 
-                // Reset visibility for proposal section elements first
-                // This ensures that when switching between proposal views, elements are correctly hidden/shown
+                selectedAnswer = selectedOption;
+                if (selectedAnswer === correctAnswer) {
+                    quizFeedback.textContent = feedback.correct;
+                    quizFeedback.classList.remove('text-red-500');
+                    quizFeedback.classList.add('text-green-500');
+                } else {
+                    quizFeedback.textContent = feedback.incorrect;
+                    quizFeedback.classList.remove('text-green-500');
+                    quizFeedback.classList.add('text-red-500');
+                }
+                quizFeedback.classList.remove('hidden');
+                nextQuizButton.classList.remove('hidden');
+            }
+
+            nextQuizButton.addEventListener('click', () => {
+                currentQuizIndex++;
+                loadQuiz(currentQuizIndex);
+            });
+
+            continueToProposalButton.addEventListener('click', () => {
+                quizSection.style.opacity = '0';
+                quizSection.style.pointerEvents = 'none';
+
+                setTimeout(() => {
+                    quizSection.classList.add('hidden');
+                    mainContent.classList.remove('hidden');
+                    setTimeout(() => {
+                        mainContent.style.opacity = '1';
+                        showSection('welcome-section');
+                    }, 50);
+                }, 500);
+            });
+
+            function showSection(targetId) {
+                sections.forEach(section => {
+                    section.classList.remove('active');
+                    section.classList.add('hidden');
+                });
+
                 proposalIntroHeading.classList.add('hidden');
                 proposalIntroText.classList.add('hidden');
                 proposalQuestion.classList.add('hidden');
                 marryMeButton.classList.add('hidden');
 
-                // Special handling for the proposal section based on which button was clicked
                 if (targetId === 'proposal-full') {
                     proposalSection.classList.remove('hidden');
-                    // Ensure all parts of the proposal section are visible
                     proposalIntroHeading.classList.remove('hidden');
                     proposalIntroText.classList.remove('hidden');
-                    proposalQuestion.classList.remove('hidden'); // 'Will you marry me?' is shown here
-                    marryMeButton.classList.remove('hidden'); // Ensure the marry me button is also visible
-
-                    setTimeout(() => {
-                        proposalSection.classList.add('active'); // Trigger fade-in
-                    }, 50);
-                } else if (targetId === 'proposal-question-only') {
-                    proposalSection.classList.remove('hidden');
-                    // Only show the question and the marry me button
                     proposalQuestion.classList.remove('hidden');
-                    marryMeButton.classList.remove('hidden'); // Ensure the marry me button is also visible
+                    marryMeButton.classList.remove('hidden');
 
                     setTimeout(() => {
-                        proposalSection.classList.add('active'); // Trigger fade-in
+                        proposalSection.classList.add('active');
                     }, 50);
                 } else {
-                    // For other sections (welcome-section, reasons-section, first-sight-section)
                     const targetSection = document.getElementById(targetId);
                     if (targetSection) {
                         targetSection.classList.remove('hidden');
                         setTimeout(() => {
-                            targetSection.classList.add('active'); // Trigger fade-in
+                            targetSection.classList.add('active');
                         }, 50);
                     }
                 }
             }
 
-            // Add event listeners to the new navigation buttons
             navButtons.forEach(button => {
                 button.addEventListener('click', (e) => {
-                    const targetId = e.target.dataset.target; // Get the target section ID from the data-target attribute
-                    showSection(targetId); // Call the function to show the corresponding section
+                    const targetId = e.target.dataset.target;
+                    showSection(targetId);
                 });
             });
 
-            // --- Gemini API Integration: Elaborate on Reasons ---
             elaborateButtons.forEach(button => {
                 button.addEventListener('click', async (e) => {
                     const listItem = e.target.closest('.reason-item');
@@ -428,11 +559,9 @@
 
                     const reason = reasonTextSpan.textContent.trim();
 
-                    // Toggle visibility of elaboration
                     if (elaborationTextDiv.classList.contains('hidden')) {
-                        // If hidden, show loading and fetch
                         loadingIndicator.classList.remove('hidden');
-                        elaborationTextDiv.classList.add('hidden'); // Hide previous elaboration if any
+                        elaborationTextDiv.classList.add('hidden');
 
                         try {
                             const prompt = `Elaborate on the following reason for loving someone: "${reason}". Make it sound like a personal, romantic reflection, about 2-3 sentences long. Focus on the emotional impact and why this quality is cherished.`;
@@ -440,7 +569,7 @@
                             chatHistory.push({ role: "user", parts: [{ text: prompt }] });
 
                             const payload = { contents: chatHistory };
-                            const apiKey = ""; // Canvas will automatically provide the API key
+                            const apiKey = "";
                             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
                             const response = await fetch(apiUrl, {
@@ -470,76 +599,62 @@
                             loadingIndicator.classList.add('hidden');
                         }
                     } else {
-                        // If visible, hide it
                         elaborationTextDiv.classList.add('hidden');
-                        elaborationTextDiv.textContent = ''; // Clear content when hidden
+                        elaborationTextDiv.textContent = '';
                     }
                 });
             });
 
-
-            // --- Final Proposal Logic ---
             marryMeButton.addEventListener('click', () => {
-                // Fade out the proposal section
                 proposalSection.classList.remove('active');
-                proposalSection.style.opacity = '0'; // Start fade out
+                proposalSection.style.opacity = '0';
 
-                // After proposal section fades, hide it and show the celebration section
                 setTimeout(() => {
-                    proposalSection.classList.add('hidden'); // Hide completely
+                    proposalSection.classList.add('hidden');
 
-                    celebrationSection.classList.remove('hidden'); // Make celebration section visible
+                    celebrationSection.classList.remove('hidden');
                     setTimeout(() => {
-                        celebrationSection.classList.add('active'); // Trigger fade-in for celebration
-                        triggerConfetti(); // Start the confetti animation!
-                    }, 50); // Small delay for display property to apply
-                }, 500); // Matches fade-out duration
+                        celebrationSection.classList.add('active');
+                        triggerConfetti();
+                    }, 50);
+                }, 500);
             });
 
-            // --- Confetti Animation (Simple JavaScript Confetti) ---
-            /**
-             * Generates and animates confetti particles on the screen.
-             */
             function triggerConfetti() {
-                // Define a set of appealing confetti colors
-                const colors = ['#FFD700', '#FF69B4', '#8A2BE2', '#00CED1', '#FF4500', '#F0F8FF']; // Gold, HotPink, BlueViolet, DarkTurquoise, OrangeRed, AliceBlue
-                const numConfetti = 150; // Number of confetti particles to generate
+                const colors = ['#FFD700', '#FF69B4', '#8A2BE2', '#00CED1', '#FF4500', '#F0F8FF'];
+                const numConfetti = 150;
 
                 for (let i = 0; i < numConfetti; i++) {
                     const confetti = document.createElement('div');
-                    confetti.classList.add('confetti-particle'); // Add base confetti styling class
+                    confetti.classList.add('confetti-particle');
 
-                    // Set random color, size, and initial position
                     confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                    confetti.style.left = `${Math.random() * 100}%`; // Random horizontal start position
-                    confetti.style.top = `${Math.random() * 100}%`; // Random vertical start position within container
-                    confetti.style.width = `${Math.random() * 8 + 4}px`; // Random width between 4px and 12px
-                    confetti.style.height = `${Math.random() * 8 + 4}px`; // Random height between 4px and 12px
-                    confetti.style.opacity = Math.random() * 0.7 + 0.3; // Random opacity between 0.3 and 1
-                    confetti.style.transform = `rotate(${Math.random() * 360}deg)`; // Random initial rotation
-                    confetti.style.position = 'absolute'; // Absolute positioning within its container
-                    confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px'; // Randomly make some round, some square
+                    confetti.style.left = `${Math.random() * 100}%`;
+                    confetti.style.top = `${Math.random() * 100}%`;
+                    confetti.style.width = `${Math.random() * 8 + 4}px`;
+                    confetti.style.height = `${Math.random() * 8 + 4}px`;
+                    confetti.style.opacity = Math.random() * 0.7 + 0.3;
+                    confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                    confetti.style.position = 'absolute';
+                    confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
 
-                    confettiContainer.appendChild(confetti); // Add confetti to the container
+                    confettiContainer.appendChild(confetti);
 
-                    // Animate confetti using Web Animations API for smooth performance
-                    const animationDuration = Math.random() * 2 + 3; // Random duration between 3 and 5 seconds
-                    const delay = Math.random() * 0.5; // Random delay before animation starts (0-0.5 seconds)
-                    const endY = window.innerHeight + 50; // Target Y position (off-screen bottom)
-                    const endXOffset = (Math.random() - 0.5) * 400; // Random horizontal drift (-200px to +200px)
+                    const animationDuration = Math.random() * 2 + 3;
+                    const delay = Math.random() * 0.5;
+                    const endY = window.innerHeight + 50;
+                    const endXOffset = (Math.random() - 0.5) * 400;
 
                     confetti.animate([
-                        // Keyframes for the animation
                         { transform: `translateY(0) translateX(0) rotate(${Math.random() * 360}deg)`, opacity: 1 },
-                        { transform: `translateY(${endY}px) translateX(${endXOffset}px) rotate(${Math.random() * 720 + 360}deg)`, opacity: 0 }
+                        { transform: `translateY(-${window.innerHeight}px) translateX(${endXOffset}px) rotate(${Math.random() * 720 + 360}deg)`, opacity: 0 }
                     ], {
-                        duration: animationDuration * 1000, // Convert seconds to milliseconds
-                        easing: 'ease-out', // Smooth deceleration
-                        delay: delay * 1000, // Convert seconds to milliseconds
-                        fill: 'forwards' // Retain the final state of the animation
+                        duration: animationDuration * 1000,
+                        easing: 'ease-out',
+                        delay: delay * 1000,
+                        fill: 'forwards'
                     });
 
-                    // Remove confetti from DOM after its animation completes to prevent memory leaks
                     setTimeout(() => {
                         confetti.remove();
                     }, (animationDuration + delay) * 1000);
